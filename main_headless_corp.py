@@ -169,9 +169,11 @@ class HeadlessAttendanceCorp:
                         karyawan_list = response.json().get("data", [])
                         ada_foto_baru = False
                         for kar in karyawan_list:
-                            nip = kar.get("employee_id", "")
+                            # --- UBAH 2 BARIS INI SESUAI JSON LARAVEL ---
+                            nip = kar.get("employee_code", "") 
                             nama = kar.get("name", "Unknown")
-                            foto_url = kar.get("photo_url", "")
+                            foto_url = kar.get("photo", "")
+                            # --------------------------------------------
                             
                             if nip and foto_url:
                                 filename = f"Picture_{nip}_{nama}.jpg"
@@ -182,7 +184,7 @@ class HeadlessAttendanceCorp:
                                         if img_data.status_code == 200:
                                             with open(filepath, 'wb') as f:
                                                 f.write(img_data.content)
-                                            logger_sys.info(f"⬇️ Berhasil unduh foto baru via Headless: {filename}")
+                                            logger_sys.info(f"⬇️ Berhasil mengunduh foto baru: {filename}")
                                             ada_foto_baru = True
                                     except Exception:
                                         pass
