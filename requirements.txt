@@ -1,0 +1,14 @@
+# Library Utama Computer Vision & AI
+opencv-python==4.8.1.78
+numpy<2
+face-recognition>=1.3.0
+mediapipe<=0.10.21         
+tensorflow>=2.15.0
+keras-facenet>=0.3.0
+customtkinter
+
+# Library untuk HTTP Request (API)
+requests>=2.31.0
+
+# FIX KRUSIAL: Menjaga kompatibilitas library lawas
+setuptools<70
