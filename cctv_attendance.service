@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/dmk-fr/Documents/cctv-faceregoction/corp_beta
-ExecStart=/home/dmk-fr/Documents/cctv-faceregoction/corp_beta/venv/bin/python3 main_headless_corp.py
+WorkingDirectory=/home/absencctv/face-recognition-headless
+ExecStart=/home/absencctv/face-recognition-headless/venv/bin/python3 main_headless_corp.py
 Restart=always
 RestartSec=5
 StandardOutput=inherit
