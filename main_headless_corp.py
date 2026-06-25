@@ -8,6 +8,7 @@ import threading
 import json
 import sys
 import signal
+import base64 # Pastikan import base64 ada di bagian atas file
 from datetime import datetime
 
 import mediapipe as mp
@@ -198,26 +199,37 @@ class HeadlessAttendanceCorp:
         try:
             success, buffer = cv2.imencode('.jpg', frame_crop)
             if not success: return
+            
+            # Konversi array byte gambar menjadi teks Base64
+            img_base64_str = base64.b64encode(buffer).decode('utf-8')
                 
-            data_text = {
-                "employee_id": nip,
+            # Struktur ini sudah disesuaikan 100% dengan POSTMAN kamu
+            payload = {
+                "employee_code": nip, 
                 "latitude": self.LATITUDE, 
                 "longitude": self.LONGITUDE,
                 "scan_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "machine": self.NAMA_MESIN, 
+                "image": f"data:image/jpeg;base64,{img_base64_str}", # Format standard Base64 Data URI
                 "ip_address": self.IP_ADDRESS, 
                 "city": self.CITY,
-                "remark": "Data From Headless CCTV System"
+                "remark": "Data From CCTV Face Recognition"
             }
-            data_file = {"image": (f"{nip}_capture.jpg", buffer.tobytes(), "image/jpeg")}
+            
+            # Sesuaikan headers dengan yang ada di Postman
+            headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
 
             def worker_api():
                 try:
-                    response = requests.post(self.API_URL, data=data_text, files=data_file, timeout=10)
+                    # Kita ubah dari kirim files (multipart) menjadi kirim json murni
+                    response = requests.post(self.API_URL, json=payload, headers=headers, timeout=15)
                     if response.status_code in [200, 201]:
-                        logger_att.info(f"✅ SUKSES API [Headless]: Data {nip} terkirim.")
+                        logger_att.info(f"✅ SUKSES API [Headless]: Data {nip} terkirim & Tersimpan.")
                     else:
-                        logger_err.error(f"⚠️ API GAGAL [Headless]: {response.text}")
+                        logger_err.error(f"⚠️ API DITOLAK [Headless]: Kode {response.status_code} - {response.text}")
                 except Exception as e:
                     logger_err.error(f"⚠️ API Background Error [Headless]: {e}")
 
